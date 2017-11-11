@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<title>Login</title>
+		<% include bootstrap %>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<a class="navbar-brand" href="/">Restaurant App</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+		</nav>
+
+		<br><br>
+		
+		<div class="container" align="center">
+			<div class="card col-md-4">
+				<br>
+				<h3>Login</h3>
+				<br>
+				<form method="post">
+					<input type="text" name="userid" class="form-control" placeholder="User ID" required><br>
+					<input type="password" name="password" class="form-control" placeholder="Password" required><br>
+					
+					<p>
+						<font color="red"><b><%= prompt %></b></font>
+					</p>
+					
+					<input type="submit" value="Login" formaction="/login" class="btn btn-primary btn-block"><br>
+					<input type="submit" value="Register" formaction="/register" class="btn btn-primary btn-block"><br>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
