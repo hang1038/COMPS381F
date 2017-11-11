@@ -1,5 +1,5 @@
 {
-    "name": "server",
+    "name": "rest-server",
     "description": "Restaurant App",
     "author": "Kevin & Ray",
     "version": "0.0.1",

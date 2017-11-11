@@ -33,34 +33,34 @@ app.get('/', function(req, res) {
 });
 
 app.post('/register', function(req, res) {
-	var criteria = {};
-	criteria['userid'] = req.body.userid;
-	criteria['password'] = req.body.password;
+	var user = {};
+	user['userid'] = req.body.userid;
+	user['password'] = req.body.password;
 	
 	MongoClient.connect(mongourl, function(err, db) {
 		assert.equal(err, null);
-		createUser(db, criteria, function(result) {
+		createUser(db, user, function(result) {
 			db.close();
 			if (result)
 				res.render('login', {prompt: 'Registration complete. Please login.'});
 			else
-				res.render('login', {prompt: 'User ID: "' + criteria['userid'] + '" is taken. Try another.'});
+				res.render('login', {prompt: 'User ID: "' + user['userid'] + '" is taken. Try another.'});
 		});
 	});
 });
 
 app.post('/login', function(req, res) {
-	var criteria = {};
-	criteria['userid'] = req.body.userid;
-	criteria['password'] = req.body.password;
+	var user = {};
+	user['userid'] = req.body.userid;
+	user['password'] = req.body.password;
 
 	MongoClient.connect(mongourl, function(err, db) {
 		assert.equal(err, null);
-		findUser(db, criteria, function(result) {
+		findUser(db, user, function(result) {
 			db.close();
 			if (result) {
 				sess = req.session;
-				sess.user = criteria['userid'];
+				sess.user = user['userid'];
 				res.redirect('/');
 			} else {
 				res.render('login', {prompt: 'Incorrect user ID or password.'});
@@ -77,19 +77,19 @@ app.get('/logout', function(req, res) {
 });
 
 // Model
-function createUser(db, criteria, callback) {
-	db.collection('users').insertOne(criteria, function(err, result) {
+function createUser(db, user, callback) {
+	db.collection('users').insertOne(user, function(err, result) {
 		try {
 			assert.equal(err, null);
 		} catch (err) {
-			console.error('User ID: "' + criteria['userid'] + '" is taken. Insert user failed.');
+			console.error('User ID: "' + user['userid'] + '" is taken. Insert user failed.');
 		}
 		callback(result);
 	});
 }
 
-function findUser(db, criteria, callback) {
-	db.collection('users').findOne(criteria, function(err, result) {
+function findUser(db, user, callback) {
+	db.collection('users').findOne(user, function(err, result) {
 		assert.equal(err, null);
 		callback(result);
 	});
