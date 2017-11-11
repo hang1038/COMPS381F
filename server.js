@@ -19,10 +19,17 @@ app.set('view engine', 'ejs');
 // Controller
 app.get('/', function(req, res) {
 	sess = req.session;
-	if(sess.user)
-		res.render('index', {user: sess.user});
-	else
+	if(sess.user) {
+		MongoClient.connect(mongourl, function(err, db) {
+			assert.equal(err, null);
+			findRestaurants(db, function(result) {
+				db.close();
+				res.render('index', {user: sess.user, restaurants: result});
+			});
+		});
+	} else {
 		res.render('login', {prompt: ''});
+	}
 });
 
 app.post('/register', function(req, res) {
@@ -43,20 +50,21 @@ app.post('/register', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
-	sess = req.session;
 	var criteria = {};
 	criteria['userid'] = req.body.userid;
 	criteria['password'] = req.body.password;
-	sess.user = criteria['userid'];
 
 	MongoClient.connect(mongourl, function(err, db) {
 		assert.equal(err, null);
 		findUser(db, criteria, function(result) {
 			db.close();
-			if (result)
+			if (result) {
+				sess = req.session;
+				sess.user = criteria['userid'];
 				res.redirect('/');
-			else
+			} else {
 				res.render('login', {prompt: 'Incorrect user ID or password.'});
+			}
 		});
 	});
 });
@@ -70,7 +78,7 @@ app.get('/logout', function(req, res) {
 
 // Model
 function createUser(db, criteria, callback) {
-	cursor = db.collection('users').insertOne(criteria, function(err, result) {
+	db.collection('users').insertOne(criteria, function(err, result) {
 		try {
 			assert.equal(err, null);
 		} catch (err) {
@@ -81,10 +89,21 @@ function createUser(db, criteria, callback) {
 }
 
 function findUser(db, criteria, callback) {
-	cursor = db.collection('users').findOne(criteria, function(err, result) {
-		assert.equal(err, null); 
-		db.collection('users').createIndex({userid: 1}, {unique: true});
+	db.collection('users').findOne(criteria, function(err, result) {
+		assert.equal(err, null);
 		callback(result);
+	});
+}
+
+function findRestaurants(db, callback) {
+	var restaurants = [];
+	var cursor = db.collection('restaurants').find({});
+	cursor.each(function(err, result) {
+		assert.equal(err, null); 
+		if (result != null)
+			restaurants.push(result);
+		else
+			callback(restaurants);
 	});
 }
 
