@@ -3,21 +3,23 @@
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	</button>
-
-	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item active">
-				<a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="#">Create Restaurant</a>
-			</li>
-		</ul>
-		<form class="form-inline my-2 my-lg-0" action="/logout" method="get">
-			<span class="navbar-text">
-				Hi, <%= user %> &nbsp;
-			</span>
-			<button class="btn btn-primary my-2 my-sm-0" type="submit">Logout</button>
-		</form>
-	</div>
+	
+	<% if (session._id) { %>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active">
+					<a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">Create Restaurant</a>
+				</li>
+			</ul>
+			<form class="form-inline my-2 my-lg-0" action="/logout" method="get">
+				<span class="navbar-text">
+					Hi, <%= session.userid %> &nbsp;
+				</span>
+				<button class="btn btn-primary my-2 my-sm-0" type="submit">Logout</button>
+			</form>
+		</div>
+	<% } %>
 </nav>
