@@ -11,20 +11,22 @@ app.use(session({
 	secret: 'restaurant',
 	resave: true,
 	saveUninitialized: false
-}));
+app.use(function(req,res,next){
+    res.locals.session = req.session;
+    next();
+});
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
 // Controller
 app.get('/', function(req, res) {
-	sess = req.session;
-	if(sess.user) {
+	if(req.session._id) {
 		MongoClient.connect(mongourl, function(err, db) {
 			assert.equal(err, null);
 			findRestaurants(db, function(result) {
 				db.close();
-				res.render('index', {user: sess.user, restaurants: result});
+				res.render('index', {restaurants: result});
 			});
 		});
 	} else {
@@ -41,10 +43,11 @@ app.post('/register', function(req, res) {
 		assert.equal(err, null);
 		createUser(db, user, function(result) {
 			db.close();
-			if (result)
+			if (result) {
 				res.render('login', {prompt: 'Registration complete. Please login.'});
-			else
+			} else {
 				res.render('login', {prompt: 'User ID: "' + user['userid'] + '" is taken. Try another.'});
+			}
 		});
 	});
 });
@@ -58,9 +61,10 @@ app.post('/login', function(req, res) {
 		assert.equal(err, null);
 		findUser(db, user, function(result) {
 			db.close();
+			console.log(result + 'dffd');
 			if (result) {
-				sess = req.session;
-				sess.user = user['userid'];
+				req.session._id = result._id;
+				req.session.userid = user['userid'];
 				res.redirect('/');
 			} else {
 				res.render('login', {prompt: 'Incorrect user ID or password.'});
@@ -73,6 +77,22 @@ app.get('/logout', function(req, res) {
 	req.session.destroy(function(err) {
 		assert.equal(err, null);
 		res.redirect('/');
+	});
+});
+
+app.get('/restaurant', function(req, res) {
+	var criteria = {};
+	criteria['_id'] = new ObjectId(req.query._id);
+	
+	MongoClient.connect(mongourl, function(err, db) {
+		assert.equal(err, null);
+		findRestaurantById(db, criteria, function(result) {
+			db.close();
+			if (result)
+				res.render('restaurant', {restaurant: result});
+			else
+				res.render('login', {prompt: 'Incorrect user ID or password.'});
+		});
 	});
 });
 
@@ -100,10 +120,18 @@ function findRestaurants(db, callback) {
 	var cursor = db.collection('restaurants').find({});
 	cursor.each(function(err, result) {
 		assert.equal(err, null); 
-		if (result != null)
+		if (result != null) {
 			restaurants.push(result);
-		else
+		} else {
 			callback(restaurants);
+		}
+	});
+}
+
+function findRestaurantById(db, criteria, callback) {
+	db.collection('restaurants').findOne(criteria, function(err, result) {
+		assert.equal(err, null);
+		callback(result);
 	});
 }
 
