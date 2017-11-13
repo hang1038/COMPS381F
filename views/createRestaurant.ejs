@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<title>Restaurant App</title>
+		<% include bootstrap %>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+			<a class="navbar-brand" href="/">Restaurant App</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+		</nav>
+		
+		<div class="container" style="margin-top:100px" align="center">
+			<div class="card col-md-4">
+				<br>
+				<h3>Create Restaurant</h3>
+				<br>
+				<form method="post">
+					<input type="text" name="name" class="form-control" placeholder="name" required><br>
+					<input type="text" name="borough" class="form-control" placeholder="borough" ><br>
+					<input type="text" name="cuisine" class="form-control" placeholder="cuisine" ><br>
+					<input type="file" name="photo" value=""><br>
+					<input type="text" name="address_street" class="form-control" placeholder="address_street" ><br>
+					<input type="text" name="address_building" class="form-control" placeholder="address_building" ><br>
+					<input type="text" name="address_zipcode" class="form-control" placeholder="address_zipcode" ><br>
+					<input type="text" name="address_coord" class="form-control" placeholder="address_coord" ><br>
+					<input type="text" name="grade_user" class="form-control" placeholder="grades_user" ><br>
+					<input type="text" name="grade_score" class="form-control" placeholder="grades_score" ><br>
+					<input type="text" name="owner" class="form-control" placeholder="owner" required><br>
+					
+					<p>
+						<font color="red"><b><%= prompt %></b></font>
+					</p>
+					
+					<input type="submit" value="Create" formaction="/createRestaurants" class="btn btn-primary btn-block"><br>
+					
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
