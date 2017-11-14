@@ -25,8 +25,7 @@ app.get('/', function(req, res) {
 	if(req.session._id) {
 		MongoClient.connect(mongourl, function(err, db) {
 			assert.equal(err, null);
-			
-      (db, function(result) {
+			findRestaurants(db, function(result) {
 				db.close();
 				res.render('index', {restaurants: result});
 			});
