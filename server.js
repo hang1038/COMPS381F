@@ -12,19 +12,23 @@ app.use(session({
 	resave: true,
 	saveUninitialized: false
 }));
+app.use(function(req,res,next){
+    res.locals.session = req.session;
+    next();
+});
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
 // Controller
 app.get('/', function(req, res) {
-	sess = req.session;
-	if(sess.user) {
+	if(req.session._id) {
 		MongoClient.connect(mongourl, function(err, db) {
 			assert.equal(err, null);
-			findRestaurants(db, function(result) {
+			
+      (db, function(result) {
 				db.close();
-				res.render('index', {user: sess.user, restaurants: result});
+				res.render('index', {restaurants: result});
 			});
 		});
 	} else {
@@ -41,10 +45,11 @@ app.post('/register', function(req, res) {
 		assert.equal(err, null);
 		createUser(db, user, function(result) {
 			db.close();
-			if (result)
+			if (result) {
 				res.render('login', {prompt: 'Registration complete. Please login.'});
-			else
+			} else {
 				res.render('login', {prompt: 'User ID: "' + user['userid'] + '" is taken. Try another.'});
+			}
 		});
 	});
 });
@@ -59,8 +64,8 @@ app.post('/login', function(req, res) {
 		findUser(db, user, function(result) {
 			db.close();
 			if (result) {
-				sess = req.session;
-				sess.user = user['userid'];
+				req.session._id = result._id;
+				req.session.userid = user['userid'];
 				res.redirect('/');
 			} else {
 				res.render('login', {prompt: 'Incorrect user ID or password.'});
@@ -94,12 +99,63 @@ app.post('/createRestaurants', function(req, res) {
 			}
 		});
 	});
-	
 });
 
 app.get('/createRestaurant', function(req, res) {
 	res.render('createRestaurant', {prompt: ''});
-	
+});
+
+app.get('/restaurant', function(req, res) {
+	if(req.session._id) {
+		var restaurant = {};
+		restaurant['_id'] = new ObjectId(req.query._id);
+		
+		MongoClient.connect(mongourl, function(err, db) {
+			assert.equal(err, null);
+			findRestaurantById(db, restaurant, function(result) {
+				db.close();
+				res.render('restaurant', {restaurant: result});
+			});
+		});
+	} else {
+		res.redirect('/');
+	}
+});
+
+app.get('/rate', function(req, res) {
+	if(req.session._id) {
+		var restaurant = {};
+		restaurant['_id'] = new ObjectId(req.query._id);
+		res.render('rate', {restaurant: restaurant});
+	} else {
+		res.redirect('/');
+	}
+});
+
+app.get('/doRate', function(req, res) {
+	if(req.session._id) {
+		var restaurant = {};
+		var grade = {};
+		restaurant['_id'] = new ObjectId(req.query._id);
+		grade['user'] = req.session.userid;
+		grade['score'] = req.query.score;
+		
+		MongoClient.connect(mongourl, function(err, db) {
+			assert.equal(err, null);
+			
+			checkIfRated(db, restaurant, req.session.userid, function(result) {
+				db.close();
+				//
+			});
+			
+			insertGrade(db, restaurant, grade, function(result) {
+				db.close();
+				res.redirect('/restaurant?_id=' + req.query._id);
+			});
+		});
+	} else {
+		res.redirect('/');
+	}
 });
 
 // Model
@@ -109,17 +165,6 @@ function createUser(db, user, callback) {
 			assert.equal(err, null);
 		} catch (err) {
 			console.error('User ID: "' + user['userid'] + '" is taken. Insert user failed.');
-		}
-		callback(result);
-	});
-}
-
-function createRestaurant(db, rest, callback) {
-	db.collection('restaurants').insertOne(rest, function(err, result) {
-		try {
-			assert.equal(err, null);
-		} catch (err) {
-			console.error('User ID: "' + rest['name'] + '" is taken. Insert user failed.');
 		}
 		callback(result);
 	});
@@ -137,10 +182,43 @@ function findRestaurants(db, callback) {
 	var cursor = db.collection('restaurants').find({});
 	cursor.each(function(err, result) {
 		assert.equal(err, null); 
-		if (result != null)
+		if (result != null) {
 			restaurants.push(result);
-		else
+		} else {
 			callback(restaurants);
+		}
+	});
+}
+
+function createRestaurant(db, rest, callback) {
+	db.collection('restaurants').insertOne(rest, function(err, result) {
+		try {
+			assert.equal(err, null);
+		} catch (err) {
+			console.error('User ID: "' + rest['name'] + '" is taken. Insert user failed.');
+		}
+		callback(result);
+	});
+}
+
+function findRestaurantById(db, restaurant, callback) {
+	db.collection('restaurants').findOne(restaurant, function(err, result) {
+		assert.equal(err, null);
+		callback(result);
+	});
+}
+
+function insertGrade(db, restaurant, grade, callback) {
+	db.collection('restaurants').updateOne(restaurant, {$push: {'grades': grade}}, function(err, result) {
+		assert.equal(err, null);
+		callback(result);
+	});
+}
+
+function checkIfRated(db, restaurant, userid, callback) {
+	db.collection('restaurants').findOne(restaurant, {'grades': {$elemMatch: {'user': userid}}}, function(err, result) {
+		assert.equal(err, null);
+		callback(result);
 	});
 }
 
