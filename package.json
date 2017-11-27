@@ -4,11 +4,13 @@
     "author": "Kevin & Ray",
     "version": "0.0.1",
     "dependencies": {
-        "body-parser": "*",
-        "ejs": "*",
-        "express": "*",
-        "express-session": "*",
-        "mongodb": "*"
+        "body-parser": "latest",
+        "cookie-session": "latest",
+        "ejs": "latest",
+        "express": "latest",
+        "mongodb": "latest",
+        "formidable": "latest",
+        "express-fileupload": "latest"
     },
     "engine": "node >= 0.10.0",
     "scripts": {
