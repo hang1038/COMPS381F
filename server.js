@@ -265,6 +265,7 @@ app.post('/updateRestaurant', function(req, res) {
 		var restaurant = {};
 		var updateID = {};
 		var address = {};
+		var coord = [];
 		updateID['_id'] = new ObjectId(req.query._id);
 		restaurant['_id'] = new ObjectId(req.query._id);
 		restaurant['name'] = req.body.name;
