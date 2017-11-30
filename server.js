@@ -268,16 +268,14 @@ app.post('/updateRestaurant', function(req, res) {
 		updateID['_id'] = new ObjectId(req.query._id);
 		restaurant['_id'] = new ObjectId(req.query._id);
 		restaurant['name'] = req.body.name;
-		if (req.body.borough) restaurant['borough'] = req.body.borough;
-		if (req.body.cuisine) restaurant['cuisine'] = req.body.cuisine;
-		if (req.body.address_street) address['street'] = req.body.address_street;
-		if (req.body.address_building) address['building'] = req.body.address_building;
-		if (req.body.address_zipcode) address['zipcode'] = req.body.address_zipcode;
-		if (req.body.address_coord) {
-			coord = req.body.address_coord.split(',');
-			address['coord'] = coord;
-		}
-		if (req.body.address_street || req.body.address_building || req.body.address_zipcode || req.body.address_coord) restaurant['address']= address;
+		restaurant['borough'] = req.body.borough;
+		restaurant['cuisine'] = req.body.cuisine;
+		address['street'] = req.body.address_street;
+		address['building'] = req.body.address_building;
+		address['zipcode'] = req.body.address_zipcode;
+		coord = req.body.address_coord.split(',');
+		address['coord'] = coord;
+		restaurant['address']= address;
 		restaurant['owner'] = req.session.userid;
 
 		if (req.files.photoToUpload != null) {
