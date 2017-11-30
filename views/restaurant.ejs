@@ -49,6 +49,11 @@
 						<p><label class="text-primary">Building:</label> <%= restaurant.address.building ? restaurant.address.building : "" %></p>
 						<p><label class="text-primary">Zipcode:</label> <%= restaurant.address.zipcode ? restaurant.address.zipcode : "" %></p>
 						<p><label class="text-primary">Coordinate:</label> [<%= restaurant.address.coord ? restaurant.address.coord : "" %>]</p>
+					<% } else { %>
+						<p><label class="text-primary">Street:</label></p>
+						<p><label class="text-primary">Building:</label></p>
+						<p><label class="text-primary">Zipcode:</label></p>
+						<p><label class="text-primary">Coordinate:</label></p>
 					<% } %>
 					<p><label class="text-primary">Rating:</label>
 						<ul class="list-group">
