@@ -6,16 +6,23 @@
 	<body>
 		<% include header %>
 		<div class="container" style="margin-top:100px">
-			<% if (restaurants.length > 0) { %>
-				<p>Showing <%= restaurants.length %> documents.</p>
-				<div class="list-group">
-					<% for (i in restaurants) { %>
-						<a href="/restaurant?_id=<%= restaurants[i]._id %>" class="list-group-item"><%= restaurants[i].name %></a>
-					<% } %>
-				</div>
-			<% } else { %>
-				<h3>No restaurant found.</h3>
-			<% } %>
+			<h3>Showing <%= restaurants.length %> documents</h3>
+			<h3>(criteria: {
+				<% 
+				var count = 1;
+				for (i in criteria) { 
+				%>
+					"<%= i %>": "<%= criteria[i] %>"
+					<% if (count != Object.keys(criteria).length) { %>,<% }
+					count++;%>
+				<% } %>
+			})</h3>
+			<hr>
+			<div class="list-group">
+				<% for (i in restaurants) { %>
+					<a href="/restaurant?_id=<%= restaurants[i]._id %>" class="list-group-item"><%= restaurants[i].name %></a>
+				<% } %>
+			</div>
 		</div>
 	</body>
 </html>

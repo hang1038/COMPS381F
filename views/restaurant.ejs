@@ -2,6 +2,12 @@
 	<head>
 		<title>Restaurant App - <%= restaurant.name %></title>
 		<% include bootstrap %>
+		<style>
+			a.disabled{
+				pointer-events: none;
+				curosor: default;			
+			}
+		</style>
 	</head>
 	<body>
 		<% include header %>
@@ -10,23 +16,39 @@
 				<div class="card-header">
 					<h3><%= restaurant.name %></h3>
 				</div>
-				<!-- <img class="card-img-top" src="..." height="400"> -->
 				<div class="card-body card-text">
+					<% if (restaurant.photo) { %>
+						<img class="card-img-top" src="data:<%= restaurant.photo_mimetype %>;base64, <%= restaurant.photo %>">
+						<hr>
+					<% } %>
 					<p align="right">
 						<a href="/rate?_id=<%= restaurant._id %>" class="btn btn-primary">Rate</a>
-						<a href="#" class="btn btn-primary">Edit</a>
-						<a href="#" class="btn btn-primary">Delete</a>
+					<% if (restaurant.owner ==  session.userid) { %>
+						<a href="/editRestaurant?_id=<%= restaurant._id %>" class="btn btn-primary ">Edit</a>
+						<a href="/deleteRestaurant?_id=<%= restaurant._id %>" class="btn btn-primary ">Delete</a>
+					<% } else { %>
+						<a href="#" class="btn btn-primary disabled">Edit</a>
+						<a href="#" class="btn btn-primary disabled">Delete</a>
+					<% } %>
+					</p>
+					<p align="right">
 						<a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
 					</p>
-					<p align="right"><a href="#" style="text-decoration:underline">Google Map</a></p>
-					<p><label class="text-primary">Restaurant ID:</label> <%= restaurant.restaurant_id ? restaurant.restaurant_id : "" %></p>
-					<p><label class="text-primary">Borough:</label> <%= restaurant.borough ? restaurant.borough : "" %></p>
-					<p><label class="text-primary">Cuisine:</label> <%= restaurant.cuisine ? restaurant.cuisine : "" %></p>
+					<% if (restaurant.address) { %>
+						<% if (restaurant.address.coord) { %>
+							<p align="right">
+								<a href="/map?lat=<%= restaurant.address.coord[0] %>&lon=<%= restaurant.address.coord[1] %>&title=<%= restaurant.name %>" style="text-decoration:underline">Google Map</a>
+							</p>
+						<% } %>
+					<% } %>
+					<p><label class="text-primary">Restaurant ID:</label> <%= restaurant.restaurant_id %></p>
+					<p><label class="text-primary">Borough:</label> <%= restaurant.borough %></p>
+					<p><label class="text-primary">Cuisine:</label> <%= restaurant.cuisine %></p>
 					<% if (restaurant.address) { %>
 						<p><label class="text-primary">Street:</label> <%= restaurant.address.street ? restaurant.address.street : "" %></p>
 						<p><label class="text-primary">Building:</label> <%= restaurant.address.building ? restaurant.address.building : "" %></p>
-						<p><label class="text-primary">Zipcode:</label> [<%= restaurant.address.zipcode ? restaurant.address.zipcode : "" %>]</p>
-						<p><label class="text-primary">Coordinate:</label> <%= restaurant.address.coord ? restaurant.address.coord : "" %></p>
+						<p><label class="text-primary">Zipcode:</label> <%= restaurant.address.zipcode ? restaurant.address.zipcode : "" %></p>
+						<p><label class="text-primary">Coordinate:</label> [<%= restaurant.address.coord ? restaurant.address.coord : "" %>]</p>
 					<% } %>
 					<p><label class="text-primary">Rating:</label>
 						<ul class="list-group">
