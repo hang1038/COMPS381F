@@ -121,7 +121,7 @@ app.get('/', function(req, res) {
 	} else {
 		res.status(404);
 		res.setHeader('Content-Type', 'text/html');
-		res.render('login', {prompt: ''});
+		res.render('login');
 	}
 });
 
@@ -137,11 +137,11 @@ app.post('/register', function(req, res) {
 			if (result) {
 				res.status(200);
 				res.setHeader('Content-Type', 'text/html');
-				res.render('login', {prompt: 'Registration complete. Please login.'});
+				res.render('login', {success: 'Registration complete. Please login.'});
 			} else {
 				res.status(404);
 				res.setHeader('Content-Type', 'text/html');
-				res.render('login', {prompt: 'Registration complete. Please login.'});
+				res.render('login', {warning: 'User ID "' + user['userid'] + '" is taken. Try another.'});
 			}
 		});
 	});
@@ -164,7 +164,7 @@ app.post('/login', function(req, res) {
 			} else {
 				res.status(404);
 				res.setHeader('Content-Type', 'text/html');
-				res.render('login', {prompt: 'Incorrect user ID or password.'});
+				res.render('login', {warning: 'Incorrect user ID or password.'});
 			}
 		});
 	});
