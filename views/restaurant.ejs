@@ -35,7 +35,7 @@
 						<a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
 					</p>
 					<% if (restaurant.address) { %>
-						<% if (restaurant.address.coord) { %>
+						<% if (restaurant.address.coord != "") { %>
 							<p align="right">
 								<a href="/map?lat=<%= restaurant.address.coord[0] %>&lon=<%= restaurant.address.coord[1] %>&title=<%= restaurant.name %>" style="text-decoration:underline">Google Map</a>
 							</p>
