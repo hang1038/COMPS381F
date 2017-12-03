@@ -21,7 +21,7 @@
 					<input type="text" name="address_street" class="form-control" placeholder="address_street" value="<%= restaurant.address.street ? restaurant.address.street : "" %>"><br>
 					<input type="text" name="address_building" class="form-control" placeholder="address_building" value="<%= restaurant.address.building ? restaurant.address.building : "" %>"><br>
 					<input type="text" name="address_zipcode" class="form-control" placeholder="address_zipcode" value="<%= restaurant.address.zipcode ? restaurant.address.zipcode : "" %>"><br>
-					<input type="text" name="address_coord" class="form-control" placeholder="address_coord" value="<%= restaurant.address.coord ? restaurant.address.coord[0] + "," + restaurant.address.coord[1] : "" %>"><br>
+					<input type="text" name="address_coord" class="form-control" placeholder="address_coord" value="<%= restaurant.address.coord.length == 2 ? restaurant.address.coord[0] + "," + restaurant.address.coord[1] : "" %>"><br>
 					<% } else { %>
 					<input type="text" name="address_street" class="form-control" placeholder="address_street" value=""><br>
 					<input type="text" name="address_building" class="form-control" placeholder="address_building" value=""><br>
